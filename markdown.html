@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Markdown Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+      background-color: rgb(197, 197, 197);
+    }
+    #drop-area {
+      border: 2px dashed #ccc;
+      padding: 20px;
+      width: 400px;
+      margin: 0 auto;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 30px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="drop-area">
+    <p>Drag and drop a Markdown or text file here.</p>
+  </div>
+
+  <div id="result"></div>
+
+  <script>
+    function handleFileSelect(evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+
+      var files = evt.dataTransfer.files;
+      var file = files[0];
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+        var content = e.target.result;
+        var resultDiv = document.getElementById('result');
+
+        // Convert Markdown to HTML
+        var converter = new showdown.Converter({ tables: true });
+        var html = converter.makeHtml(content);
+
+        // Display the HTML
+        resultDiv.innerHTML = html;
+      };
+
+      reader.readAsText(file);
+    }
+
+    function handleDragOver(evt) {
+      evt.stopPropagation();
+      evt.preventDefault();
+      evt.dataTransfer.dropEffect = 'copy';
+    }
+
+    var dropArea = document.body;
+    dropArea.addEventListener('dragover', handleDragOver, false);
+    dropArea.addEventListener('drop', handleFileSelect, false);
+  </script>
+
+  <!-- Include the Showdown library -->
+  <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
+</body>
+</html>

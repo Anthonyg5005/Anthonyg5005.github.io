@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Anthonyg5005 on Discord</title>
+    <style>
+        body {
+            background-color: #313338;
+            color: #cecece;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .note {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #cecece;
+        }
+        a {
+            color: #00A8FC;
+        }
+        @media (max-width: 980px) {
+            h1 {
+                font-size: 80px;
+            }
+            p {
+                font-size: 40px;
+            }
+            .note {
+                font-size: 30px;
+            }
+        }
+    </style>    
+    <link rel="icon" href="images/discord.ico" type="image/x-icon">
+    <script>
+        function updateTimer() {
+            var countdownElement = document.getElementById("countdown");
+            var countdownValue = parseInt(countdownElement.innerText);
+            
+            if (countdownValue > 0) {
+                countdownValue--;
+                countdownElement.innerText = countdownValue;
+                setTimeout(updateTimer, 1000);
+            } else {
+                window.location.href = "discord://discord.com/users/419377737149710346";
+            }
+        }
+        
+        window.onload = function() {
+            setTimeout(updateTimer, 1000);
+        };
+    </script>
+</head>
+<body>
+    <h1>Opening in Discord...</h1>
+    <p>You will be redirected in <span id="countdown">3</span> seconds.</p>
+    <p>If you don't have the Discord app installed, <a href="https://discord.com/users/419377737149710346">click here</a> to use the web version.</p>
+    <div class="note">Note: This page is not associated with Discord and is just a simple redirect to my account.</div>
+</body>
+</html>

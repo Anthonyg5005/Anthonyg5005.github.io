@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         YouTube Shorts Blocker: My Attention Span's Last Hope
 // @namespace    http://tampermonkey.net/
-// @version      0.5
-// @description  Outsmart the algorithm.  Restores your ability to watch single videos without falling into the Shorts abyss. (Still lets you click the Shorts button if you *want* to lose 3 hours.)
-// @author       Gemini 1.5 Pro + Claude Sonnet + GPT o4
+// @version      0.6
+// @description  Outsmart the algorithm.  Restores your ability to watch single videos without falling into the Shorts abyss.
+// @author       Gemini 1.5 Pro + Claude 3.5 Sonnet + GPT o4
 // @match        https://www.youtube.com/*
 // @grant        none
 // ==/UserScript==
@@ -18,7 +18,6 @@
             if (urlObj.pathname.startsWith('/shorts/')) {
                 return urlObj.pathname.split('/shorts/')[1].split('?')[0];
             } else if (urlObj.searchParams.has('feature') && urlObj.searchParams.get('feature') === 'shorts') {
-                // Handles URLs like https://www.youtube.com/watch?v=VIDEO_ID&feature=shorts
                 return urlObj.searchParams.get('v');
             }
         } catch (e) {
@@ -29,8 +28,9 @@
 
     function redirectShorts() {
         const videoId = getVideoIdFromShortsUrl(window.location.href);
-        if (videoId) {
-            window.location.href = `https://www.youtube.com/watch?v=${videoId}`;
+        if (videoId && window.location.pathname.startsWith('/shorts/')) {
+            history.replaceState(null, '', `https://www.youtube.com/watch?v=${videoId}`);
+            window.dispatchEvent(new PopStateEvent('popstate'));
         }
     }
 
@@ -43,22 +43,29 @@
         });
     }
 
-    function init() {
+    function handlePageUpdates() {
         redirectShorts();
         convertShortLinks(document.querySelectorAll('a[href*="/shorts/"], a[href*="&feature=shorts"]'));
     }
 
     // Initial check
-    init();
+    handlePageUpdates();
 
     // Observe changes in the DOM with throttling
     let timeout;
     const observer = new MutationObserver(() => {
         clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            convertShortLinks(document.querySelectorAll('a[href*="/shorts/"], a[href*="&feature=shorts"]'));
-        }, 100);
+        timeout = setTimeout(handlePageUpdates, 100);
     });
-
     observer.observe(document, { childList: true, subtree: true });
+
+    // Handle YouTube's history API usage
+    const originalPushState = history.pushState;
+    history.pushState = function() {
+        originalPushState.apply(this, arguments);
+        handlePageUpdates();
+    };
+
+    window.addEventListener('popstate', handlePageUpdates);
+    window.addEventListener('yt-navigate-finish', handlePageUpdates);
 })();

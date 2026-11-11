@@ -3,7 +3,3 @@ Disallow:
 
 User-agent: Googlebot-Image
 Disallow: /
-
-User-agent: Googlebot-Image
-Allow: /vrcih.html
-Allow: /vrcihL.html
